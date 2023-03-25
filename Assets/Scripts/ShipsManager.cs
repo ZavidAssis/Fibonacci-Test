@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShipsManager : SingletonBase<ShipsManager>
 {
@@ -26,7 +27,7 @@ public class ShipsManager : SingletonBase<ShipsManager>
     private int lastNumber, lastSecondNumber;//saves the last two Fibonacci Number
     private Vector2 spawnSize;//area to spawn ships
     public List<Ship> ShipsAlive { get => shipsAlive; set => shipsAlive = value; }
-
+    private Vector2 screenSize;
 
     private void Start()
     {
@@ -40,17 +41,30 @@ public class ShipsManager : SingletonBase<ShipsManager>
 
         StartCoroutine(recursiveSpawnShips(0, 1));//start first ship spawn
     }
+
+    void FixedUpdate()
+    {
+        attSpawnArea();
+    }
     #region ShipsSpawner
     private void setSpawnArea()//set size of randomizer spawnArea
     {
-        Vector3 leftPoint = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, Camera.main.nearClipPlane));
-        Vector3 rightPoint = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height / 2, Camera.main.nearClipPlane));
+        screenSize = new Vector2Int(Screen.width, Screen.height);
+        Vector3 leftPoint = Camera.main.ScreenToWorldPoint(new Vector3(0, screenSize.y / 2, Camera.main.nearClipPlane));
+        Vector3 rightPoint = Camera.main.ScreenToWorldPoint(new Vector3(screenSize.x, screenSize.y / 2, Camera.main.nearClipPlane));
         float distance = Vector3.Distance(leftPoint, rightPoint);
         spawnSize.x = distance * .9f;
 
-        Vector3 downPoint = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, 0, Camera.main.nearClipPlane));
+        Vector3 downPoint = Camera.main.ScreenToWorldPoint(new Vector3(screenSize.x / 2, 0, Camera.main.nearClipPlane));
         spawnPos.position = downPoint;
         spawnSize.y = 0;
+    }
+    private void attSpawnArea()//when window is resized att spawnArea
+    {
+        if (Screen.width != screenSize.x || Screen.height != screenSize.y)
+        {
+            setSpawnArea();
+        }
     }
     private IEnumerator recursiveSpawnShips(int lastN, int index)//spawn ships
     {
