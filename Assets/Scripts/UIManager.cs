@@ -19,7 +19,7 @@ public class UIManager : SingletonBase<UIManager>
     private void Start()
     {
         Application.targetFrameRate = 60;//just for lock frameRate
-        attFinobacciNumber(0);
+        attFinobacciNumber(1);
     }
     private void Update()
     {
